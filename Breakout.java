@@ -43,6 +43,14 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
     /** Number of turns */
     private static final int NTURNS = 3;
 
+    // Ball position
+    private int ballX = WIDTH / 2;
+    private int ballY = HEIGHT / 2;
+
+    // Ball speed
+    private int ballDX = 2;
+    private int ballDY = 3;
+
     private int paddleX = WIDTH / 2 - PADDLE_WIDTH / 2;
 
     private Timer gameTimer;
@@ -62,11 +70,11 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_LEFT) {
-            paddleX -= 5; 
+            paddleX -= 5;
         } else if (key == KeyEvent.VK_RIGHT) {
-            paddleX += 5; 
+            paddleX += 5;
         }
-        repaint(); 
+        repaint();
     }
 
     @Override
@@ -76,12 +84,37 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-       // Not needed for this game
+        // Not needed for this game
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      // Game environment update   
+        // Game environment update
+        
+        // Ball position change
+        ballX += ballDX;
+        ballY += ballDY;
+
+        // Collision with walls
+            
+        // Side collision
+        if (ballX <= 0 || ballX + BALL_RADIUS * 2 >= WIDTH) {
+            ballDX = -ballDX;
+        }
+
+        // Top collision
+        if (ballY <= 0) {
+            ballDY = -ballDY;
+        }
+
+        // Bottom collision
+        if (ballY + BALL_RADIUS * 2 >= HEIGHT) {
+            ballX = WIDTH / 2;
+            ballY = HEIGHT / 2;
+            ballDY = -ballDY;
+        }
+
+        repaint();
     }
 
     @Override
@@ -90,6 +123,10 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
 
         // Setting the bricks
         setupBricks(g);
+
+        // For the ball
+        g.setColor(Color.blue);
+        g.fillOval(ballX, ballY, BALL_RADIUS * 2, BALL_RADIUS * 2);
 
         // For the paddle
         g.setColor(Color.pink);
@@ -100,7 +137,8 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
     private void setupBricks(Graphics g) {
         for (int row = 0; row < NBRICK_ROWS; row++) {
             for (int col = 0; col < NBRICKS_PER_ROW; col++) {
-                int brickX = col * (BRICK_WIDTH + BRICK_SEP) + (WIDTH - (NBRICKS_PER_ROW * BRICK_WIDTH + (NBRICKS_PER_ROW - 1) * BRICK_SEP)) / 2;
+                int brickX = col * (BRICK_WIDTH + BRICK_SEP)
+                        + (WIDTH - (NBRICKS_PER_ROW * BRICK_WIDTH + (NBRICKS_PER_ROW - 1) * BRICK_SEP)) / 2;
                 int brickY = BRICK_Y_OFFSET + row * (BRICK_HEIGHT + BRICK_SEP);
                 g.setColor(getColorForRow(row));
                 g.fillRect(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT);
@@ -123,7 +161,7 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
     }
 
     // Main function
-    public static void main(String[] args) {  
+    public static void main(String[] args) {
         JFrame frame = new JFrame("Breakout");
         Breakout newGame = new Breakout();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
