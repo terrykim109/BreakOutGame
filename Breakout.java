@@ -89,8 +89,7 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Game environment update
-        
+           
         // Ball position change
         ballX += ballDX;
         ballY += ballDY;
