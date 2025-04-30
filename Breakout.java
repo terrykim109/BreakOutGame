@@ -70,9 +70,9 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_LEFT) {
-            paddleX -= 5;
+            paddleX -= 15;
         } else if (key == KeyEvent.VK_RIGHT) {
-            paddleX += 5;
+            paddleX += 15;
         }
         repaint();
     }
@@ -93,7 +93,15 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
         // Ball position change
         ballX += ballDX;
         ballY += ballDY;
+        
+        // Paddle height
+        int paddleY = HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT;
 
+        // Paddle collision with the ball
+        if (ballY + BALL_RADIUS * 2 >= paddleY && ballX + BALL_RADIUS >= paddleX && ballX <= paddleX + PADDLE_WIDTH) {
+            ballDY = -ballDY;
+            ballY = paddleY - BALL_RADIUS * 2;
+        }
         // Collision with walls
             
         // Side collision
@@ -112,7 +120,8 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
             ballY = HEIGHT / 2;
             ballDY = -ballDY;
         }
-
+        
+        
         repaint();
     }
 
