@@ -51,7 +51,12 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
     private int ballDX = 2;
     private int ballDY = 3;
 
+    // Paddle position
     private int paddleX = WIDTH / 2 - PADDLE_WIDTH / 2;
+
+    // Bricks set up 
+    private boolean[][] bricks = new boolean[NBRICK_ROWS][NBRICKS_PER_ROW];
+
 
     private Timer gameTimer;
 
@@ -60,6 +65,13 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
         this.setBackground(Color.gray);
         this.addKeyListener(this);
         this.setFocusable(true);
+
+        // For the bricks
+        for (int row = 0; row < NBRICK_ROWS; row++) {
+            for (int col = 0; col < NBRICKS_PER_ROW; col++) {
+                bricks[row][col] = true;
+            }
+        }
 
         // timer update
         gameTimer = new Timer(5, this);
@@ -102,8 +114,8 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
             ballDY = -ballDY;
             ballY = paddleY - BALL_RADIUS * 2;
         }
+
         // Collision with walls
-            
         // Side collision
         if (ballX <= 0 || ballX + BALL_RADIUS * 2 >= WIDTH) {
             ballDX = -ballDX;
@@ -121,7 +133,28 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
             ballDY = -ballDY;
         }
         
+        // Brick collision
+        for (int row = 0; row < NBRICK_ROWS; row++) {
+            for (int col = 0; col < NBRICKS_PER_ROW; col++) {
+                if (bricks[row][col]) {
+
+                    // Position of the brick
+                    int brickX = col * ( BRICK_WIDTH + BRICK_SEP)+ (WIDTH - ( NBRICKS_PER_ROW * BRICK_WIDTH + (NBRICKS_PER_ROW - 1) * BRICK_SEP)) / 2;
+                    int brickY = BRICK_Y_OFFSET + row * ( BRICK_HEIGHT + BRICK_SEP);
+                    
+                    // Using rectangles for a ball as well for intersect methods down below for collision detection
+                    Rectangle ball = new Rectangle(ballX, ballY, BALL_RADIUS * 2, BALL_RADIUS * 2);
+                    Rectangle brick = new Rectangle(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT);
         
+                    if (ball.intersects(brick)) {
+                        bricks[row][col] = false;  
+                        ballDY = -ballDY;          
+                        break;                     
+                    }
+                }
+            }
+        }
+
         repaint();
     }
 
@@ -143,13 +176,17 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
 
     /** Sets up the bricks in the initial configuration */
     private void setupBricks(Graphics g) {
-        for (int row = 0; row < NBRICK_ROWS; row++) {
+
+         for (int row = 0; row < NBRICK_ROWS; row++) {
             for (int col = 0; col < NBRICKS_PER_ROW; col++) {
                 int brickX = col * (BRICK_WIDTH + BRICK_SEP)
                         + (WIDTH - (NBRICKS_PER_ROW * BRICK_WIDTH + (NBRICKS_PER_ROW - 1) * BRICK_SEP)) / 2;
                 int brickY = BRICK_Y_OFFSET + row * (BRICK_HEIGHT + BRICK_SEP);
-                g.setColor(getColorForRow(row));
-                g.fillRect(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT);
+                if (bricks[row][col]) {
+                    g.setColor(getColorForRow(row));
+                    g.fillRect(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT);
+                }
+    
             }
         }
     }
