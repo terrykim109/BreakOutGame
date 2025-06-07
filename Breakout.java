@@ -57,6 +57,8 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
     // Bricks set up 
     private boolean[][] bricks = new boolean[NBRICK_ROWS][NBRICKS_PER_ROW];
 
+    // Keeping score
+    private int score = 0;
 
     private Timer gameTimer;
 
@@ -148,8 +150,14 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
         
                     if (ball.intersects(brick)) {
                         bricks[row][col] = false;  
-                        ballDY = -ballDY;          
-                        break;                     
+                        ballDY = -ballDY;  
+                        
+                        // Increment the score per brick hit
+                        score += 1; 
+                 
+
+                        break;
+                                       
                     }
                 }
             }
@@ -172,6 +180,11 @@ public class Breakout extends JPanel implements KeyListener, ActionListener {
         // For the paddle
         g.setColor(Color.pink);
         g.fillRect(paddleX, HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT);
+   
+        // For the score
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 16));
+        g.drawString("Score: " + score, 10, 20);
     }
 
     /** Sets up the bricks in the initial configuration */
